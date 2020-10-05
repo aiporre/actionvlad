@@ -246,4 +246,3 @@ arXiv 2016.
 ## Acknowledgements
 This code is based on the [tensorflow/models](https://github.com/tensorflow/models/tree/master/slim) repository,
 so thanks to the original authors/maintainers for releasing the code.
-# actionvlad

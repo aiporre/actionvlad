@@ -1,0 +1,4 @@
+# IDE folder
+.idea
+# compiled
+.pyc
