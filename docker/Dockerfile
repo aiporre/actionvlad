@@ -59,7 +59,12 @@ RUN conda activate actionvlad
 
 
 # Clone git repo
+<<<<<<< Updated upstream
 RUN git clone -b master https://github.com/aiporre/actionvlad.git /app/ActionVLAD --recursive
+=======
+RUN git clone -b main https://github.com/aiporre/actionvlad.git /app/ActionVLAD --recursive
+RUN pip install -r /app/ActionVlad/requirements.txt
+>>>>>>> Stashed changes
 WORKDIR /app/ActionVLAD/
 
 # install requirements
