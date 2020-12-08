@@ -22,20 +22,48 @@ RUN tar -xzvf cudnn-8.0-linux-x64-v5.1.tgz
 RUN cp cuda/include/cudnn*.h /usr/include/x86_64-linux-gnu/
 RUN cp cuda/lib64/libcudnn* /usr/lib/x86_64-linux-gnu/
 RUN chmod a+r /usr/include/x86_64-linux-gnu/cudnn*.h /usr/lib/x86_64-linux-gnu//libcudn*
-# Copy over cudnn.5.1 also needed for tensorflow
+
+# Make links
 RUN ln -sf /usr/lib/x86_64-linux-gnu/libcudnn_static_v5.a libcudnn_stlib
 RUN ln -sf /usr/lib/x86_64-linux-gnu/libcudnn.so.5 libcudnn_so
 RUN ln -sf /usr/include/x86_64-linux-gnu/cudnn_v5.h libcudnn
 
-# Install needed python packages
-# RUN pip install --upgrade pip
-# RUN pip install numpy PILLOW h5py matplotlib scipy tensorflow-gpu==0.12.0rc0
-# RUN git config --global url.https://github.com/.insteadOf git://github.com/
+# Install anaconda
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+ENV PATH /opt/conda/bin:$PATH
+
+RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
+    libglib2.0-0 libxext6 libsm6 libxrender1 \
+    git mercurial subversion
+
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda2-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc
+
+RUN apt-get install -y curl grep sed dpkg && \
+    TINI_VERSION=`curl https://github.com/krallin/tini/releases/latest | grep -o "/v.*\"" | sed 's:^..\(.*\).$:\1:'` && \
+    curl -L "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini_${TINI_VERSION}.deb" > tini.deb && \
+    dpkg -i tini.deb && \
+    rm tini.deb && \
+    apt-get clean
+
+# create environment
+RUN conda env create -n actionvlad python=3.8 pip
+
+RUN conda init bash
+
+RUN conda activate actionvlad
+
 
 # Clone git repo
 RUN git clone -b master https://github.com/aiporre/actionvlad.git /app/ActionVLAD --recursive
-RUN pip install -r /app/ActionVlad/requirements.txt
 WORKDIR /app/ActionVLAD/
+
+# install requirements
+RUN pip install -r requirements.txt
 
 #copy weights
 COPY ./docker_files/models/kmeans-init/hmdb51/rgb_conv5_kmeans64.pkl /app/ActionVLAD/models/kmeans-init/hmdb51/
