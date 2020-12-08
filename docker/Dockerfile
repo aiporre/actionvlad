@@ -18,6 +18,7 @@ ENV LD_PRELOAD "/usr/lib/libtcmalloc.so.4:$LD_PRELOAD"
 # Install cuDNN and the dev files for cuDNN
 WORKDIR /
 COPY ./docker_files/cudnn-8.0-linux-x64-v5.1.tgz /
+RUN tar -xzvf cudnn-8.0-linux-x64-v5.1.tgz
 RUN cp cuda/include/cudnn*.h /usr/include/x86_64-linux-gnu/
 RUN cp cuda/lib64/libcudnn* /usr/lib/x86_64-linux-gnu/
 RUN chmod a+r /usr/include/x86_64-linux-gnu/cudnn*.h /usr/lib/x86_64-linux-gnu//libcudn*
