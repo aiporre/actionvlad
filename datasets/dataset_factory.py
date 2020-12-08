@@ -33,8 +33,6 @@ from __future__ import print_function
 # from datasets import hmdb51
 import tensorflow as tf
 import tensorflow_datasets as tfds
-
-
 # datasets_map = {
 #     'cifar10': cifar,
 #     'flowers': flowers,
@@ -83,7 +81,9 @@ def get_dataset(name, split_name, dataset_dir, dataset_list_dir='',
   if name not in datasets_available:
     raise ValueError('Name of dataset unknown %s' % name)
   print('--------------->', dataset_dir)
-  ds = tfds.load(name, split=split_name, shuffle_files=True, data_dir=dataset_dir)
+  config = tfds.download.DownloadConfig(verify_ssl=False)
+
+  ds = tfds.load(name, split=split_name, shuffle_files=True, data_dir=dataset_dir, download_and_prepare_kwargs={"download_config" : config})
 
   return ds.shuffle(1024).batch(1).take(num_samples).prefetch(tf.data.experimental.AUTOTUNE)
   # return datasets_map[name].get_split(
