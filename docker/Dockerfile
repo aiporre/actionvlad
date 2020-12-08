@@ -51,9 +51,7 @@ RUN apt-get install -y curl grep sed dpkg && \
     apt-get clean
 
 # create environment
-RUN conda env create -n actionvlad python=3.8 pip
-
-RUN conda init bash
+RUN conda create -y -n actionvlad python=3.8 pip
 
 RUN conda activate actionvlad
 
