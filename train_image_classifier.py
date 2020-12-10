@@ -19,9 +19,9 @@
 # ==============================================================================
 """Generic training script that trains a model using a given dataset."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os
 import time
@@ -817,8 +817,8 @@ def main(_):
                 name=vn[:-2])
             varname_to_ref_grad[vn] = ref_var
 
-      all_assign_ref_op = [ref.assign(varname_to_grad[vn]) for vn, ref in varname_to_ref_grad.items()]
-      all_assign_add_ref_op = [ref.assign_add(varname_to_grad[vn]) for vn, ref in varname_to_ref_grad.items()]
+      all_assign_ref_op = [ref.assign(varname_to_grad[vn]) for vn, ref in list(varname_to_ref_grad.items())]
+      all_assign_add_ref_op = [ref.assign_add(varname_to_grad[vn]) for vn, ref in list(varname_to_ref_grad.items())]
       assign_gradients_ref_op = tf.group(*all_assign_ref_op)
       accmulate_gradients_op = tf.group(*all_assign_add_ref_op)
       with tf.control_dependencies([accmulate_gradients_op]):

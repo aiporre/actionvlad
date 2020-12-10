@@ -27,9 +27,9 @@ protocol buffers, each of which contain a single image and label.
 The script should take about a minute to run.
 
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import gzip
 import os
@@ -219,7 +219,7 @@ def run(dataset_dir):
     _add_to_tfrecord(data_filename, labels_filename, 10000, tfrecord_writer)
 
   # Finally, write the labels file:
-  labels_to_class_names = dict(zip(range(len(_CLASS_NAMES)), _CLASS_NAMES))
+  labels_to_class_names = dict(list(zip(list(range(len(_CLASS_NAMES))), _CLASS_NAMES)))
   dataset_utils.write_label_file(labels_to_class_names, dataset_dir)
 
   _clean_up_temporary_files(dataset_dir)

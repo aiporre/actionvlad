@@ -30,7 +30,7 @@ with h5py.File(val_path, 'r') as fin:
   val_labels = fin['labels'].value
 res = clf.predict(val_feats)
 
-print 'acc: %f' % (np.mean(res == np.array(val_labels)))
+print('acc: %f' % (np.mean(res == np.array(val_labels))))
 
 subprocess.call('mkdir -p /tmp/clf_stor/', shell=True)
 clf.save('/tmp/clf_stor')

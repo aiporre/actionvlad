@@ -3,9 +3,9 @@
 # Copyright (c) 2017 Carnegie Mellon University and Adobe Systems Incorporated
 # Please see LICENSE on https://github.com/rohitgirdhar/ActionVLAD/ for details
 # ------------------------------------------------------------------------------
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import tensorflow as tf
 

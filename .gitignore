@@ -7,3 +7,4 @@
 # training checkpoints
 *.ckpt
 models
+*.pyc

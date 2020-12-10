@@ -41,5 +41,5 @@ del train_feats
 
 res = clf.predict(test_feats)
 
-print 'acc: %f' % (np.mean(res == np.array(test_labels)))
+print('acc: %f' % (np.mean(res == np.array(test_labels))))
 

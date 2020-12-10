@@ -24,7 +24,7 @@ if args.idt is not None and len(args.idt) > 0:
                            lines])
     # add 0 scores for videos for which there is no iDT score
     missing_vids = [el for el in vid_ids if el not in idt_vid_ids]
-    print('%d missing videos scores in iDT. Using 0s for those.' % len(missing_vids))
+    print(('%d missing videos scores in iDT. Using 0s for those.' % len(missing_vids)))
     idt_scores = np.vstack((idt_scores, np.zeros((len(missing_vids),
                                                   idt_scores.shape[1]))))
     idt_vid_ids = idt_vid_ids + missing_vids

@@ -6,9 +6,9 @@
 """Provides data for the UCF101 dataset.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os
 import numpy as np
@@ -71,7 +71,7 @@ def getReaderFn(num_samples, modality='rgb', dataset_dir=''):
               file_prefix='flow', file_zero_padding=5, file_index=1,
               dataset_dir=dataset_dir[1],
               step=step)
-          image_buffer = zip(rgb_image_buffer, flow_image_buffer)
+          image_buffer = list(zip(rgb_image_buffer, flow_image_buffer))
           image_buffer = [[el[0]] + el[1] for el in image_buffer]
         else:
           logging.error('Unknown modality %s\n' % modality)

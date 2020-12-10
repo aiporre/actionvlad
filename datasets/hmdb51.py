@@ -6,9 +6,9 @@
 """Provides data for the HMDB51 dataset.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 from datasets.video_data_utils import gen_dataset
 

@@ -43,7 +43,7 @@ def get_img_flow(vpath, nframes, num_samples=25, optical_flow_frames=10):
         impath = os.path.join(imgdir, vpath, 'flow_%c_%05d.jpg' % (d, i*step+j+1))
         I = cv2.imread(impath, 0)
         if I is None:
-          print 'couldnt read %s' % impath
+          print('couldnt read %s' % impath)
           I = np.ones((340, 256)) * 128
         subimg.append(cv2.resize(I, (340, 256)))
     imgs.append(np.vstack(subimg))
@@ -70,5 +70,5 @@ with open(vidlist, 'r') as fin:
     else:
       for imid,im in enumerate(img):
         cv2.imwrite(os.path.join(outdir, vpath, 'image%d.jpg' % imid), im)
-    print('Done %d' % (lno))
+    print(('Done %d' % (lno)))
     # locker.unlock(outfpath)

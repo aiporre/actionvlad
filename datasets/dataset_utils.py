@@ -18,9 +18,9 @@
 # limitations under the License.
 # ==============================================================================
 """Contains utilities for downloading and converting datasets."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os
 import sys
@@ -132,7 +132,7 @@ def read_label_file(dataset_dir, filename=LABELS_FILENAME):
   with tf.gfile.Open(labels_filename, 'r') as f:
     lines = f.read().decode()
   lines = lines.split('\n')
-  lines = filter(None, lines)
+  lines = [_f for _f in lines if _f]
 
   labels_to_class_names = {}
   for line in lines:
