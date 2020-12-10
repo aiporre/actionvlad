@@ -31,7 +31,7 @@ import tensorflow as tf
 from tensorflow.python.platform import tf_logging as logging
 from vlad_utils.system_info import get_available_gpus
 
-from datasets import dataset_factory
+from datasets import dataset_factory, dataset_data_provider
 from nets import nets_factory
 from preprocessing import preprocessing_factory
 # from datasets import dataset_data_provider

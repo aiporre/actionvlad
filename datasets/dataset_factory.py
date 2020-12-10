@@ -23,26 +23,28 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# from datasets import cifar10
-# from datasets import flowers
-# from datasets import imagenet
-# from datasets import mnist
-# from datasets import ucf101
-# from datasets import charades
-# from datasets import places365
-# from datasets import hmdb51
+from datasets import cifar10
+from datasets import flowers
+from datasets import imagenet
+from datasets import mnist
+from datasets import ucf101
+from datasets import charades
+from datasets import places365
+from datasets import hmdb51
+import os
 import tensorflow as tf
 import tensorflow_datasets as tfds
-# datasets_map = {
-#     'cifar10': cifar,
-#     'flowers': flowers,
-#     'imagenet': imagenet,
-#     'mnist': mnist,
-#     'ucf101': ucf101,
-#     'charades': charades,
-#     'places365': places365,
-#     'hmdb51': hmdb51,
-# }
+
+datasets_map = {
+    'cifar10': cifar10,
+    'flowers': flowers,
+    'imagenet': imagenet,
+    'mnist': mnist,
+    'ucf101': ucf101,
+    'charades': charades,
+    'places365': places365,
+    'hmdb51': hmdb51,
+}
 datasets_available = [
     'cifar10',
     'flowers',
@@ -55,11 +57,10 @@ datasets_available = [
 ]
 
 
-
 def get_dataset(name, split_name, dataset_dir, dataset_list_dir='',
                 file_pattern=None, reader=None, modality='rgb', num_samples=1,
-                split_id=1):
-  """Given a dataset name and a split_name returns a Dataset.
+                split_id=1, download=False):
+    """Given a dataset name and a split_name returns a Dataset.
 
   Args:
     name: String, the name of the dataset.
@@ -78,20 +79,27 @@ def get_dataset(name, split_name, dataset_dir, dataset_list_dir='',
   Raises:
     ValueError: If the dataset `name` is unknown.
   """
-  if name not in datasets_available:
-    raise ValueError('Name of dataset unknown %s' % name)
-  print('--------------->', dataset_dir)
-  config = tfds.download.DownloadConfig(verify_ssl=False)
+    if name not in datasets_available:
+        raise ValueError('Name of dataset unknown %s' % name)
+    print('--> Dataset directory', dataset_dir)
+    # if download:
+    #     print('Download all dataset:... (Make sure you have sufficent space. )')
+    #     config = tfds.download.DownloadConfig(verify_ssl=False)
+    #     ds = tfds.load(name, split=split_name, shuffle_files=True, data_dir=dataset_dir,
+    #                    download_and_prepare_kwargs={"download_config": config})
+    # else:
+    #     print('Is data already in directory is in directory :)')
+    #     print(os.listdir(os.path.join(dataset_dir)))
+    #     ds = tfds.load(name, split=split_name, shuffle_files=True, data_dir=dataset_dir,
+    #                    download=False)
 
-  ds = tfds.load(name, split=split_name, shuffle_files=True, data_dir=dataset_dir, download_and_prepare_kwargs={"download_config" : config})
-
-  return ds.shuffle(1024).batch(1).take(num_samples).prefetch(tf.data.experimental.AUTOTUNE)
-  # return datasets_map[name].get_split(
-  #     split_name,
-  #     dataset_dir,
-  #     dataset_list_dir,
-  #     file_pattern,
-  #     reader,
-  #     modality,
-  #     num_samples,
-  #     split_id=split_id)
+    # return ds.shuffle(1024).batch(1).take(num_samples).prefetch(tf.data.experimental.AUTOTUNE)
+    return datasets_map[name].get_split(
+        split_name,
+        dataset_dir,
+        dataset_list_dir,
+        file_pattern,
+        reader,
+        modality,
+        num_samples,
+        split_id=split_id)

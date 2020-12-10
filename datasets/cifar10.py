@@ -32,8 +32,6 @@ import tensorflow as tf
 
 from datasets import dataset_utils
 
-slim = tf.contrib.slim
-
 _FILE_PATTERN = 'cifar10_%s.tfrecord'
 
 SPLITS_TO_SIZES = {'train': 50000, 'test': 10000}

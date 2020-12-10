@@ -43,13 +43,13 @@ To read data using multiple readers simultaneous with shuffling:
 
 
 
-from tensorflow.contrib.slim.python.slim.data import data_provider
-from tensorflow.contrib.slim.python.slim.data import parallel_reader
+# from tensorflow.contrib.slim.python.slim.data import data_provider
+# from tensorflow.contrib.slim.python.slim.data import parallel_reader
 from tensorflow.python.platform import tf_logging as logging
 import tensorflow as tf
 
 
-class DatasetDataProvider(data_provider.DataProvider):
+class DatasetDataProvider(object):
 
   def __init__(self, dataset, num_readers=1, shuffle=True, num_epochs=None,
                common_queue_capacity=256, common_queue_min=128,
