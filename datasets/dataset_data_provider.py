@@ -39,9 +39,9 @@ To read data using multiple readers simultaneous with shuffling:
   images, labels = pascal_voc_data_provider.Get(['images', 'labels'])
 """
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from tensorflow.contrib.slim.python.slim.data import data_provider
 from tensorflow.contrib.slim.python.slim.data import parallel_reader
@@ -98,5 +98,5 @@ class DatasetDataProvider(data_provider.DataProvider):
     tensors = [img, label]
 
     super(DatasetDataProvider, self).__init__(
-        items_to_tensors=dict(list(zip(items, tensors))),
+        items_to_tensors=dict(zip(items, tensors)),
         num_samples=dataset.num_samples)

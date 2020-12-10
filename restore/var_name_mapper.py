@@ -5,9 +5,9 @@
 # ------------------------------------------------------------------------------
 import tensorflow as tf
 
-FLAGS = tf.compat.v1.app.flags.FLAGS
+FLAGS = tf.app.flags.FLAGS
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
   'var_name_mapping', 'none',
   'Map the variable names while loading caffemodels.')
 

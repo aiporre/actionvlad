@@ -20,9 +20,9 @@
 
 """Tests for slim.inception."""
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 
 import tensorflow as tf
@@ -40,7 +40,7 @@ class NetworksTest(tf.test.TestCase):
         net_fn = nets_factory.get_network_fn(net, num_classes)
         # Most networks use 224 as their default_image_size
         image_size = getattr(net_fn, 'default_image_size', 224)
-        inputs = tf.random.uniform((batch_size, image_size, image_size, 3))
+        inputs = tf.random_uniform((batch_size, image_size, image_size, 3))
         logits, end_points = net_fn(inputs)
         self.assertTrue(isinstance(logits, tf.Tensor))
         self.assertTrue(isinstance(end_points, dict))

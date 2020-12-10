@@ -66,10 +66,10 @@ def main():
       final / np.linalg.norm(final, axis=1, keepdims=True)) + idt_wt * (
         idt / np.linalg.norm(idt, axis=1, keepdims=True))
     acc_withIDT = np.mean(final.argmax(axis=1) == labels)
-    print(('Spatial = %0.6f [*%f]\nTemporal = %0.6f [*%f]\nFinal acc = '
+    print('Spatial = %0.6f [*%f]\nTemporal = %0.6f [*%f]\nFinal acc = '
           '%0.6f.\nonly IDT = %f\nwith IDT = %f' %
           (acc_spat, (1.0 - args['temporal_ratio']), acc_temp, args['temporal_ratio'],
-           acc, acc_onlyIDT, acc_withIDT)))
+           acc, acc_onlyIDT, acc_withIDT))
 
 
 if __name__ == '__main__':

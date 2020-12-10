@@ -23,9 +23,9 @@ The dataset scripts used to create the dataset can be found at:
 tensorflow/models/slim/data/create_cifar10_dataset.py
 """
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import tensorflow as tf
@@ -72,12 +72,12 @@ def get_split(split_name, dataset_dir, file_pattern=None, reader=None):
 
   # Allowing None in the signature so that dataset_factory can use the default.
   if reader is None:
-    reader = tf.compat.v1.TFRecordReader
+    reader = tf.TFRecordReader
 
   keys_to_features = {
-      'image/encoded': tf.io.FixedLenFeature((), tf.string, default_value=''),
-      'image/format': tf.io.FixedLenFeature((), tf.string, default_value='png'),
-      'image/class/label': tf.io.FixedLenFeature(
+      'image/encoded': tf.FixedLenFeature((), tf.string, default_value=''),
+      'image/format': tf.FixedLenFeature((), tf.string, default_value='png'),
+      'image/class/label': tf.FixedLenFeature(
           [], tf.int64, default_value=tf.zeros([], dtype=tf.int64)),
   }
 

@@ -28,9 +28,9 @@ The script should take about a minute to run.
 
 """
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import math
 import os
@@ -59,7 +59,7 @@ class ImageReader(object):
 
   def __init__(self):
     # Initializes function that decodes RGB JPEG data.
-    self._decode_jpeg_data = tf.compat.v1.placeholder(dtype=tf.string)
+    self._decode_jpeg_data = tf.placeholder(dtype=tf.string)
     self._decode_jpeg = tf.image.decode_jpeg(self._decode_jpeg_data, channels=3)
 
   def read_image_dims(self, sess, image_data):
@@ -126,13 +126,13 @@ def _convert_dataset(split_name, filenames, class_names_to_ids, dataset_dir):
   with tf.Graph().as_default():
     image_reader = ImageReader()
 
-    with tf.compat.v1.Session('') as sess:
+    with tf.Session('') as sess:
 
       for shard_id in range(_NUM_SHARDS):
         output_filename = _get_dataset_filename(
             dataset_dir, split_name, shard_id)
 
-        with tf.io.TFRecordWriter(output_filename) as tfrecord_writer:
+        with tf.python_io.TFRecordWriter(output_filename) as tfrecord_writer:
           start_ndx = shard_id * num_per_shard
           end_ndx = min((shard_id+1) * num_per_shard, len(filenames))
           for i in range(start_ndx, end_ndx):
@@ -141,7 +141,7 @@ def _convert_dataset(split_name, filenames, class_names_to_ids, dataset_dir):
             sys.stdout.flush()
 
             # Read the filename:
-            image_data = tf.compat.v1.gfile.FastGFile(filenames[i], 'r').read()
+            image_data = tf.gfile.FastGFile(filenames[i], 'r').read()
             height, width = image_reader.read_image_dims(sess, image_data)
 
             class_name = os.path.basename(os.path.dirname(filenames[i]))
@@ -163,10 +163,10 @@ def _clean_up_temporary_files(dataset_dir):
   """
   filename = _DATA_URL.split('/')[-1]
   filepath = os.path.join(dataset_dir, filename)
-  tf.io.gfile.remove(filepath)
+  tf.gfile.Remove(filepath)
 
   tmp_dir = os.path.join(dataset_dir, 'flower_photos')
-  tf.io.gfile.rmtree(tmp_dir)
+  tf.gfile.DeleteRecursively(tmp_dir)
 
 
 def _dataset_exists(dataset_dir):
@@ -174,7 +174,7 @@ def _dataset_exists(dataset_dir):
     for shard_id in range(_NUM_SHARDS):
       output_filename = _get_dataset_filename(
           dataset_dir, split_name, shard_id)
-      if not tf.io.gfile.exists(output_filename):
+      if not tf.gfile.Exists(output_filename):
         return False
   return True
 
@@ -185,8 +185,8 @@ def run(dataset_dir):
   Args:
     dataset_dir: The dataset directory where the dataset is stored.
   """
-  if not tf.io.gfile.exists(dataset_dir):
-    tf.io.gfile.makedirs(dataset_dir)
+  if not tf.gfile.Exists(dataset_dir):
+    tf.gfile.MakeDirs(dataset_dir)
 
   if _dataset_exists(dataset_dir):
     print('Dataset files already exist. Exiting without re-creating them.')
@@ -194,7 +194,7 @@ def run(dataset_dir):
 
   dataset_utils.download_and_uncompress_tarball(_DATA_URL, dataset_dir)
   photo_filenames, class_names = _get_filenames_and_classes(dataset_dir)
-  class_names_to_ids = dict(list(zip(class_names, list(range(len(class_names))))))
+  class_names_to_ids = dict(zip(class_names, range(len(class_names))))
 
   # Divide into train and test:
   random.seed(_RANDOM_SEED)
@@ -209,7 +209,7 @@ def run(dataset_dir):
                    dataset_dir)
 
   # Finally, write the labels file:
-  labels_to_class_names = dict(list(zip(list(range(len(class_names))), class_names)))
+  labels_to_class_names = dict(zip(range(len(class_names)), class_names))
   dataset_utils.write_label_file(labels_to_class_names, dataset_dir)
 
   _clean_up_temporary_files(dataset_dir)

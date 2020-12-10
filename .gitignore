@@ -6,3 +6,4 @@
 *.jpeg
 # training checkpoints
 *.ckpt
+models

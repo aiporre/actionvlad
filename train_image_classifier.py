@@ -19,9 +19,9 @@
 # ==============================================================================
 """Generic training script that trains a model using a given dataset."""
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import time
@@ -41,111 +41,111 @@ from restore import model_restorer
 
 slim = tf.contrib.slim
 
-FLAGS = tf.compat.v1.app.flags.FLAGS
+FLAGS = tf.app.flags.FLAGS
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'master', '', 'The address of the TensorFlow master to use.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'train_dir', '/tmp/tfmodel/',
     'Directory where checkpoints and event logs are written to.')
 
-tf.compat.v1.app.flags.DEFINE_string('gpus', '0',
+tf.app.flags.DEFINE_string('gpus', '0',
                            'Comma sep list of gpus.')
 
-tf.compat.v1.app.flags.DEFINE_integer('num_clones', -1,
+tf.app.flags.DEFINE_integer('num_clones', -1,
                             'Number of model clones to deploy.')
 
-tf.compat.v1.app.flags.DEFINE_boolean('clone_on_cpu', False,
+tf.app.flags.DEFINE_boolean('clone_on_cpu', False,
                             'Use CPUs to deploy clones.')
 
-tf.compat.v1.app.flags.DEFINE_integer('worker_replicas', 1, 'Number of worker replicas.')
+tf.app.flags.DEFINE_integer('worker_replicas', 1, 'Number of worker replicas.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'num_ps_tasks', 0,
     'The number of parameter servers. If the value is 0, then the parameters '
     'are handled locally by the worker.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'num_readers', 4,
     'The number of parallel readers that read data from the dataset.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'num_preprocessing_threads', 4,
     'The number of threads used to create the batches.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'cpu_threads', 0,
     'Max CPU threads used apart from data prefetch. '
     '0 default lets system pick a reasonable number.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'log_every_n_steps', 10,
     'The frequency with which logs are print.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'save_summaries_secs', 30,
     'The frequency with which summaries are saved, in seconds.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'save_interval_secs', 600,
     'The frequency with which the model is saved, in seconds.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'task', 0, 'Task id of the replica running the training.')
 
 ######################
 # Optimization Flags #
 ######################
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'weight_decay', 0.00004, 'The weight decay on the model weights.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'optimizer', 'rmsprop',
     'The name of the optimizer, one of "adadelta", "adagrad", "adam",'
     '"ftrl", "momentum", "sgd" or "rmsprop".')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'adadelta_rho', 0.95,
     'The decay rate for adadelta.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'adagrad_initial_accumulator_value', 0.1,
     'Starting value for the AdaGrad accumulators.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'adam_beta1', 0.9,
     'The exponential decay rate for the 1st moment estimates.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'adam_beta2', 0.999,
     'The exponential decay rate for the 2nd moment estimates.')
 
-tf.compat.v1.app.flags.DEFINE_float('opt_epsilon', 1.0e-8, 'Epsilon term for the optimizer.')
+tf.app.flags.DEFINE_float('opt_epsilon', 1.0e-8, 'Epsilon term for the optimizer.')
 
-tf.compat.v1.app.flags.DEFINE_float('ftrl_learning_rate_power', -0.5,
+tf.app.flags.DEFINE_float('ftrl_learning_rate_power', -0.5,
                           'The learning rate power.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'ftrl_initial_accumulator_value', 0.1,
     'Starting value for the FTRL accumulators.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'ftrl_l1', 0.0, 'The FTRL l1 regularization strength.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'ftrl_l2', 0.0, 'The FTRL l2 regularization strength.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'momentum', 0.9,
     'The momentum for the MomentumOptimizer and RMSPropOptimizer.')
 
-tf.compat.v1.app.flags.DEFINE_float('rmsprop_momentum', 0.9, 'Momentum.')
+tf.app.flags.DEFINE_float('rmsprop_momentum', 0.9, 'Momentum.')
 
-tf.compat.v1.app.flags.DEFINE_float('rmsprop_decay', 0.9, 'Decay term for RMSProp.')
+tf.app.flags.DEFINE_float('rmsprop_decay', 0.9, 'Decay term for RMSProp.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'clip_gradients', 0,
     'Clip gradients by this value.')
 
@@ -153,22 +153,22 @@ tf.compat.v1.app.flags.DEFINE_float(
 # Learning Rate Flags #
 #######################
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'learning_rate_decay_type',
     'exponential',
     'Specifies how the learning rate is decayed. One of "fixed", "exponential",'
     ' or "polynomial"')
 
-tf.compat.v1.app.flags.DEFINE_float('learning_rate', 0.01, 'Initial learning rate.')
+tf.app.flags.DEFINE_float('learning_rate', 0.01, 'Initial learning rate.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'end_learning_rate', 0.0001,
     'The minimal end learning rate used by a polynomial decay learning rate.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'label_smoothing', 0.0, 'The amount of label smoothing.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'learning_rate_decay_factor',
     # 0.94,
     0.1,
@@ -177,19 +177,19 @@ tf.compat.v1.app.flags.DEFINE_float(
 # tf.app.flags.DEFINE_float(
 #     'num_epochs_per_decay', 2.0,
 #     'Number of epochs after which learning rate decays.')
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'num_steps_per_decay', 10000,
     'Number of steps after which learning rate decays.')
 
-tf.compat.v1.app.flags.DEFINE_bool(
+tf.app.flags.DEFINE_bool(
     'sync_replicas', False,
     'Whether or not to synchronize the replicas during training.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'replicas_to_aggregate', 1,
     'The Number of gradients to collect before updating params.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'moving_average_decay', None,
     'The decay to use for the moving average.'
     'If left as None, then moving averages are not used.')
@@ -198,103 +198,103 @@ tf.compat.v1.app.flags.DEFINE_float(
 # Dataset Flags #
 #######################
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'dataset_name', 'imagenet', 'The name of the dataset to load.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'dataset_split_name', 'train', 'The name of the train/test split.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'dataset_dir', None, 'The directory where the dataset files are stored.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'dataset_list_dir', '/home/rgirdhar/Work/Data/018_VideoVLAD/raw/UCF101/Lists/',
     'The directory where the dataset list files are stored.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'labels_offset', 0,
     'An offset for the labels in the dataset. This flag is primarily used to '
     'evaluate the VGG and ResNet architectures which do not use a background '
     'class for the ImageNet dataset.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'model_name', 'inception_v3', 'The name of the architecture to train.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'dropout', 0.8, 'Dropout on last layers.')
 
-tf.compat.v1.app.flags.DEFINE_float(
+tf.app.flags.DEFINE_float(
     'pooled_dropout', 0.5, 'Dropout on conv-pooled/netvlad output.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'preprocessing_name', None, 'The name of the preprocessing to use. If left '
     'as `None`, then the model_name flag is used.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'bgr_flip', None,
     ('Set true or false to force either, for each stream. As none (default) it will do'
       'whatever is default for that preprocessor'))
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'batch_size', 32, 'The number of samples in each batch.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'frames_per_video', 1, 'The number of frames in each batch element.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'iter_size', 1, 'Number of forward iterations before a back.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'train_image_size', None, 'Train image size')
 
-tf.compat.v1.app.flags.DEFINE_integer('max_number_of_steps', None,
+tf.app.flags.DEFINE_integer('max_number_of_steps', None,
                             'The maximum number of training steps.')
 
-tf.compat.v1.app.flags.DEFINE_string('modality', 'rgb',
+tf.app.flags.DEFINE_string('modality', 'rgb',
                            'Modality of training data.')
 
-tf.compat.v1.app.flags.DEFINE_string('scale_ratios', '1,0.875,0.75,0.66',
+tf.app.flags.DEFINE_string('scale_ratios', '1,0.875,0.75,0.66',
                            'Ratios to scale the frames by for augmentation.')
 
-tf.compat.v1.app.flags.DEFINE_float('out_dim_scale', 1.0,
+tf.app.flags.DEFINE_float('out_dim_scale', 1.0,
                           'Resize the output image by this scale. Eg, 224x '
                           'with 2 would be 448x images.')
 
-tf.compat.v1.app.flags.DEFINE_integer('split_id', 1,
+tf.app.flags.DEFINE_integer('split_id', 1,
                             'Dataset split to use.')
 
 #####################
 # Fine-Tuning Flags #
 #####################
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'checkpoint_path', None,
     'The path to a checkpoint from which to fine-tune.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'checkpoint_style', None,
     'Comma separated list of type of each checkpoint. [v1/v2_withStream]. '
     'Default all are v1.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'checkpoint_exclude_scopes', None,
     'Comma-separated list of scopes of variables to exclude when restoring '
     'from a checkpoint.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'trainable_scopes', None,
     'Comma-separated list of scopes to filter the set of variables to train.'
     'By default, None would train all the variables.')
 
-tf.compat.v1.app.flags.DEFINE_boolean(
+tf.app.flags.DEFINE_boolean(
     'ignore_missing_vars', False,
     'When restoring a checkpoint would ignore missing variables.')
 
-tf.compat.v1.app.flags.DEFINE_boolean(
+tf.app.flags.DEFINE_boolean(
     'debug', False,
     'Running some debugging print ops.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'special_assign_vars', None,
     'Specify some variables to assigned using specific files. '
     'Use format: <var_name1>,<file_name1>,<var_name2>,<file_name2>...')
@@ -303,29 +303,29 @@ tf.compat.v1.app.flags.DEFINE_string(
 # NetVLAD #
 ###########
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'pooling', None,
     'Set =[netvlad/avg-conv] to train with that.')
 
-tf.compat.v1.app.flags.DEFINE_string(
+tf.app.flags.DEFINE_string(
     'classifier_type', 'linear',
     'Classifier to use with netvlad/avg-conv. Use linear/two-layer.')
 
-tf.compat.v1.app.flags.DEFINE_boolean(
+tf.app.flags.DEFINE_boolean(
     'netvlad_batch_norm', False,
     'Apply a batch norm to the netvlad features.')
 
-tf.compat.v1.app.flags.DEFINE_integer(
+tf.app.flags.DEFINE_integer(
     'num_streams', 1,
     'Number of [flow/rgb etc] streams.')
 
-tf.compat.v1.app.flags.DEFINE_string('netvlad_initCenters', '',
+tf.app.flags.DEFINE_string('netvlad_initCenters', '',
                            'Path to PKL with the initial centers.')
 
-tf.compat.v1.app.flags.DEFINE_string('stream_pool_type', None,
+tf.app.flags.DEFINE_string('stream_pool_type', None,
                            'Pool streams [concat-netvlad].')
 
-tf.compat.v1.app.flags.DEFINE_string('conv_endpoint', None,
+tf.app.flags.DEFINE_string('conv_endpoint', None,
                            'Set a non-default conv endpoint for netvlad.'
                            'Default for vgg16: conv5. Can set fc7.'
                            'Default for inceptionV2TSN is inception_5a.')
@@ -334,7 +334,7 @@ tf.compat.v1.app.flags.DEFINE_string('conv_endpoint', None,
 # Other #
 #########
 
-tf.compat.v1.app.flags.DEFINE_boolean(
+tf.app.flags.DEFINE_boolean(
     'profile_iterations', False,
     'Write timeline profile of each iteration.')
 
@@ -359,7 +359,7 @@ def _configure_learning_rate(num_samples_per_epoch, global_step):
     decay_steps /= FLAGS.replicas_to_aggregate
 
   if FLAGS.learning_rate_decay_type == 'exponential':
-    return tf.compat.v1.train.exponential_decay(FLAGS.learning_rate,
+    return tf.train.exponential_decay(FLAGS.learning_rate,
                                       global_step,
                                       decay_steps,
                                       FLAGS.learning_rate_decay_factor,
@@ -368,7 +368,7 @@ def _configure_learning_rate(num_samples_per_epoch, global_step):
   elif FLAGS.learning_rate_decay_type == 'fixed':
     return tf.constant(FLAGS.learning_rate, name='fixed_learning_rate')
   elif FLAGS.learning_rate_decay_type == 'polynomial':
-    return tf.compat.v1.train.polynomial_decay(FLAGS.learning_rate,
+    return tf.train.polynomial_decay(FLAGS.learning_rate,
                                      global_step,
                                      decay_steps,
                                      FLAGS.end_learning_rate,
@@ -393,40 +393,40 @@ def _configure_optimizer(learning_rate):
     ValueError: if FLAGS.optimizer is not recognized.
   """
   if FLAGS.optimizer == 'adadelta':
-    optimizer = tf.compat.v1.train.AdadeltaOptimizer(
+    optimizer = tf.train.AdadeltaOptimizer(
         learning_rate,
         rho=FLAGS.adadelta_rho,
         epsilon=FLAGS.opt_epsilon)
   elif FLAGS.optimizer == 'adagrad':
-    optimizer = tf.compat.v1.train.AdagradOptimizer(
+    optimizer = tf.train.AdagradOptimizer(
         learning_rate,
         initial_accumulator_value=FLAGS.adagrad_initial_accumulator_value)
   elif FLAGS.optimizer == 'adam':
-    optimizer = tf.compat.v1.train.AdamOptimizer(
+    optimizer = tf.train.AdamOptimizer(
         learning_rate,
         beta1=FLAGS.adam_beta1,
         beta2=FLAGS.adam_beta2,
         epsilon=FLAGS.opt_epsilon)
   elif FLAGS.optimizer == 'ftrl':
-    optimizer = tf.compat.v1.train.FtrlOptimizer(
+    optimizer = tf.train.FtrlOptimizer(
         learning_rate,
         learning_rate_power=FLAGS.ftrl_learning_rate_power,
         initial_accumulator_value=FLAGS.ftrl_initial_accumulator_value,
         l1_regularization_strength=FLAGS.ftrl_l1,
         l2_regularization_strength=FLAGS.ftrl_l2)
   elif FLAGS.optimizer == 'momentum':
-    optimizer = tf.compat.v1.train.MomentumOptimizer(
+    optimizer = tf.train.MomentumOptimizer(
         learning_rate,
         momentum=FLAGS.momentum,
         name='Momentum')
   elif FLAGS.optimizer == 'rmsprop':
-    optimizer = tf.compat.v1.train.RMSPropOptimizer(
+    optimizer = tf.train.RMSPropOptimizer(
         learning_rate,
         decay=FLAGS.rmsprop_decay,
         momentum=FLAGS.rmsprop_momentum,
         epsilon=FLAGS.opt_epsilon)
   elif FLAGS.optimizer == 'sgd':
-    optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
   else:
     raise ValueError('Optimizer [%s] was not recognized', FLAGS.optimizer)
   return optimizer
@@ -455,7 +455,7 @@ def _get_init_fn():
   # Warn the user if a checkpoint exists in the train_dir. Then we'll be
   # ignoring the checkpoint anyway.
   if tf.train.latest_checkpoint(FLAGS.train_dir):
-    tf.compat.v1.logging.info(
+    tf.logging.info(
         'Ignoring --checkpoint_path because a checkpoint already exists in %s'
         % FLAGS.train_dir)
     return None
@@ -478,10 +478,10 @@ def _get_init_fn():
 
   checkpoint_paths = FLAGS.checkpoint_path.split(',')
   for cid in range(len(checkpoint_paths)):
-    if tf.io.gfile.isdir(checkpoint_paths[cid]):
+    if tf.gfile.IsDirectory(checkpoint_paths[cid]):
       checkpoint_paths[cid] = tf.train.latest_checkpoint(checkpoint_paths[cid])
 
-  tf.compat.v1.logging.info('Fine-tuning from %s' % FLAGS.checkpoint_path)
+  tf.logging.info('Fine-tuning from %s' % FLAGS.checkpoint_path)
 
   return model_restorer.restore_model(
       checkpoint_paths,
@@ -499,13 +499,13 @@ def _get_variables_to_train():
     A list of variables to train by the optimizer.
   """
   if FLAGS.trainable_scopes is None:
-    return tf.compat.v1.trainable_variables()
+    return tf.trainable_variables()
   else:
     scopes = [scope.strip() for scope in FLAGS.trainable_scopes.split(',')]
 
   variables_to_train = []
   for scope in scopes:
-    variables = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES, scope)
+    variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
     variables_to_train.extend(variables)
   return variables_to_train
 
@@ -530,9 +530,9 @@ def train_step(sess, train_op, global_step, train_step_kwargs):
     # import pdb
     # pdb.set_trace()
     if FLAGS.profile_iterations:
-      run_options = tf.compat.v1.RunOptions(
-          trace_level=tf.compat.v1.RunOptions.FULL_TRACE)
-      run_metadata = tf.compat.v1.RunMetadata()
+      run_options = tf.RunOptions(
+          trace_level=tf.RunOptions.FULL_TRACE)
+      run_metadata = tf.RunMetadata()
       total_loss, np_global_step = sess.run([train_op, global_step],
           options=run_options,
           run_metadata=run_metadata)
@@ -571,8 +571,8 @@ def summarize_images(images, num_channels_stream):
     if im_st.get_shape().as_list()[-1] != 3:
       # im_st = tf.expand_dims(tf.transpose(im_st, [ndims-1] + range(ndims-1)),
       #                       ndims)
-      im_st = tf.reduce_mean(input_tensor=im_st, axis=ndims-1,
-                             keepdims=True)
+      im_st = tf.reduce_mean(im_st, reduction_indices=ndims-1,
+                             keep_dims=True)
     if ndims > 4:
       im_st = tf.reshape(im_st, [-1,] + im_st.get_shape().as_list()[-3:])
     tf.image_summary('stream%d' % sid, im_st / 128)
@@ -586,10 +586,10 @@ def main(_):
   if FLAGS.num_clones == -1:
     FLAGS.num_clones = len(FLAGS.gpus.split(','))
 
-  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
+  tf.logging.set_verbosity(tf.logging.INFO)
   with tf.Graph().as_default():
     # tf.set_random_seed(42)
-    tf.compat.v1.set_random_seed(0)
+    tf.set_random_seed(0)
     ######################
     # Config model_deploy#
     ######################
@@ -651,7 +651,7 @@ def main(_):
       # now note that the above image might be a 23 channel image if you have
       # both RGB and flow streams. It will need to split later, but all the
       # preprocessing will be done consistently for all frames over all streams
-      label = tf.strings.to_number(label, tf.int32)
+      label = tf.string_to_number(label, tf.int32)
       label.set_shape(())
       label -= FLAGS.labels_offset
 
@@ -664,13 +664,13 @@ def main(_):
                                      out_dim_scale=FLAGS.out_dim_scale,
                                      model_name=FLAGS.model_name)
 
-      images, labels = tf.compat.v1.train.batch(
+      images, labels = tf.train.batch(
           [image, label],
           batch_size=FLAGS.batch_size,
           num_threads=FLAGS.num_preprocessing_threads,
           capacity=5 * FLAGS.batch_size)
       if FLAGS.debug:
-        images = tf.compat.v1.Print(images, [labels], 'Read batch')
+        images = tf.Print(images, [labels], 'Read batch')
       labels = slim.one_hot_encoding(
           labels, dataset.num_classes - FLAGS.labels_offset)
       batch_queue = slim.prefetch_queue.prefetch_queue(
@@ -706,13 +706,13 @@ def main(_):
       return end_points
 
     # Gather initial summaries.
-    summaries = set(tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.SUMMARIES))
+    summaries = set(tf.get_collection(tf.GraphKeys.SUMMARIES))
 
     clones = model_deploy.create_clones(deploy_config, clone_fn, [batch_queue])
     first_clone_scope = deploy_config.clone_scope(0)
     # Gather update_ops from the first clone. These contain, for example,
     # the updates for the batch_norm variables created by network_fn.
-    update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS, first_clone_scope)
+    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, first_clone_scope)
 
     # Add summaries for end_points.
     global end_points_debug
@@ -727,7 +727,7 @@ def main(_):
                                       tf.nn.zero_fraction(x)))
 
     # Add summaries for losses.
-    for loss in tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.LOSSES, first_clone_scope):
+    for loss in tf.get_collection(tf.GraphKeys.LOSSES, first_clone_scope):
       summaries.add(tf.scalar_summary('losses/%s' % loss.op.name, loss))
 
     # Add summaries for variables.
@@ -756,7 +756,7 @@ def main(_):
     if FLAGS.sync_replicas:
       # If sync_replicas is enabled, the averaging will be done in the chief
       # queue runner.
-      optimizer = tf.compat.v1.train.SyncReplicasOptimizer(
+      optimizer = tf.train.SyncReplicasOptimizer(
           opt=optimizer,
           replicas_to_aggregate=FLAGS.replicas_to_aggregate,
           variable_averages=variable_averages,
@@ -781,7 +781,7 @@ def main(_):
     # clip the gradients if needed
     if FLAGS.clip_gradients > 0:
       logging.info('Clipping gradients by %f' % FLAGS.clip_gradients)
-      with tf.compat.v1.name_scope('clip_gradients'):
+      with tf.name_scope('clip_gradients'):
         clones_gradients = slim.learning.clip_gradient_norms(
             clones_gradients,
             FLAGS.clip_gradients)
@@ -810,15 +810,15 @@ def main(_):
       for vn in varnames:
         grad = varname_to_grad[vn]
         print("accumulating ... ", (vn, grad.get_shape()))
-        with tf.compat.v1.variable_scope("ref_grad"):
+        with tf.variable_scope("ref_grad"):
           with tf.device(deploy_config.variables_device()):
             ref_var = slim.local_variable(
                 np.zeros(grad.get_shape(),dtype=np.float32),
                 name=vn[:-2])
             varname_to_ref_grad[vn] = ref_var
 
-      all_assign_ref_op = [ref.assign(varname_to_grad[vn]) for vn, ref in list(varname_to_ref_grad.items())]
-      all_assign_add_ref_op = [ref.assign_add(varname_to_grad[vn]) for vn, ref in list(varname_to_ref_grad.items())]
+      all_assign_ref_op = [ref.assign(varname_to_grad[vn]) for vn, ref in varname_to_ref_grad.items()]
+      all_assign_add_ref_op = [ref.assign_add(varname_to_grad[vn]) for vn, ref in varname_to_ref_grad.items()]
       assign_gradients_ref_op = tf.group(*all_assign_ref_op)
       accmulate_gradients_op = tf.group(*all_assign_add_ref_op)
       with tf.control_dependencies([accmulate_gradients_op]):
@@ -841,13 +841,13 @@ def main(_):
 
     # Add the summaries from the first clone. These contain the summaries
     # created by model_fn and either optimize_clones() or _gather_clone_loss().
-    summaries |= set(tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.SUMMARIES,
+    summaries |= set(tf.get_collection(tf.GraphKeys.SUMMARIES,
                                        first_clone_scope))
 
     # Merge all summaries together.
     summary_op = tf.merge_summary(list(summaries), name='summary_op')
 
-    config = tf.compat.v1.ConfigProto()
+    config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     config.intra_op_parallelism_threads = FLAGS.cpu_threads
     # config.allow_soft_placement = True
@@ -874,4 +874,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-  tf.compat.v1.app.run()
+  tf.app.run()

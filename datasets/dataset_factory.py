@@ -23,37 +23,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# from datasets import cifar10
-# from datasets import flowers
-# from datasets import imagenet
-# from datasets import mnist
-# from datasets import ucf101
-# from datasets import charades
-# from datasets import places365
-# from datasets import hmdb51
-import tensorflow as tf
-import tensorflow_datasets as tfds
-# datasets_map = {
-#     'cifar10': cifar,
-#     'flowers': flowers,
-#     'imagenet': imagenet,
-#     'mnist': mnist,
-#     'ucf101': ucf101,
-#     'charades': charades,
-#     'places365': places365,
-#     'hmdb51': hmdb51,
-# }
-datasets_available = [
-    'cifar10',
-    'flowers',
-    'imagenet',
-    'mnist',
-    'ucf101',
-    'charades',
-    'places365',
-    'hmdb51'
-]
+from datasets import cifar10
+from datasets import flowers
+from datasets import imagenet
+from datasets import mnist
+from datasets import ucf101
+from datasets import charades
+from datasets import places365
+from datasets import hmdb51
 
+datasets_map = {
+    'cifar10': cifar10,
+    'flowers': flowers,
+    'imagenet': imagenet,
+    'mnist': mnist,
+    'ucf101': ucf101,
+    'charades': charades,
+    'places365': places365,
+    'hmdb51': hmdb51,
+}
 
 
 def get_dataset(name, split_name, dataset_dir, dataset_list_dir='',
@@ -78,20 +66,14 @@ def get_dataset(name, split_name, dataset_dir, dataset_list_dir='',
   Raises:
     ValueError: If the dataset `name` is unknown.
   """
-  if name not in datasets_available:
+  if name not in datasets_map:
     raise ValueError('Name of dataset unknown %s' % name)
-  print('--------------->', dataset_dir)
-  config = tfds.download.DownloadConfig(verify_ssl=False)
-
-  ds = tfds.load(name, split=split_name, shuffle_files=True, data_dir=dataset_dir, download_and_prepare_kwargs={"download_config" : config})
-
-  return ds.shuffle(1024).batch(1).take(num_samples).prefetch(tf.data.experimental.AUTOTUNE)
-  # return datasets_map[name].get_split(
-  #     split_name,
-  #     dataset_dir,
-  #     dataset_list_dir,
-  #     file_pattern,
-  #     reader,
-  #     modality,
-  #     num_samples,
-  #     split_id=split_id)
+  return datasets_map[name].get_split(
+      split_name,
+      dataset_dir,
+      dataset_list_dir,
+      file_pattern,
+      reader,
+      modality,
+      num_samples,
+      split_id=split_id)

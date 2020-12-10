@@ -6,9 +6,9 @@
 """Provides data for the UCF101 dataset.
 """
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import numpy as np
@@ -23,7 +23,7 @@ slim = tf.contrib.slim
 _TRAIN_LIST = '/home/rgirdhar/Work/Data/020_Places365/places365_train_standard.txt'
 _VAL_LIST = '/home/rgirdhar/Work/Data/020_Places365/places365_val.txt'
 
-FLAGS = tf.compat.v1.app.flags.FLAGS
+FLAGS = tf.app.flags.FLAGS
 
 SPLITS_TO_SIZES = {'train': 1803460, 'val': 36500}
 
@@ -36,14 +36,14 @@ _ITEMS_TO_DESCRIPTIONS = {
 
 
 def readerFn(num_samples=1):
-  class reader_func(tf.compat.v1.ReaderBase):
+  class reader_func(tf.ReaderBase):
     @staticmethod
     def read(filename_queue):
       value = filename_queue.dequeue()
-      fpath, label = tf.io.decode_csv(
-          records=value, record_defaults=[[''], ['']],
+      fpath, label = tf.decode_csv(
+          value, record_defaults=[[''], ['']],
           field_delim=' ')
-      image_buffer = tf.io.read_file(fpath)
+      image_buffer = tf.read_file(fpath)
       return [image_buffer, label]
   return reader_func
 

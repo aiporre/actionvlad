@@ -31,20 +31,14 @@ mkdir $FRAME_DIR
 mkdir $LIST_DIR
 
 # 1. extract frames, change q:v to qscale for older ffmpeg
-echo "Converting video into images...."
 ffmpeg -i $vpath -qscale:v 1 $TMPDIR/frames/image_%05d.jpg < /dev/null
 
 # 2. Set up the dataset file
-echo "Creating split files...."
-echo "frames 131 -1" > $LIST_DIR/test_split1.txt
-echo "frames 131 -1" > $LIST_DIR/train_split1.txt
-#echo "frames $(ls $FRAME_DIR | wc -l) -1" > $LIST_DIR/test_split1.txt
-#echo "frames $(ls $FRAME_DIR | wc -l) -1" > $LIST_DIR/train_split1.txt
+echo "frames $(ls $FRAME_DIR | wc -l) -1" > $LIST_DIR/test_split1.txt
+echo "frames $(ls $FRAME_DIR | wc -l) -1" > $LIST_DIR/train_split1.txt
 
 # 3. Run feature extraction
-echo "running feature extraction..."
 bash ext_feats.sh $TMPDIR $LIST_DIR $FEAT_FILE
 
 # 4. Get the class
-echo 'Get class from video.....'
 python get_class.py $FEAT_FILE ../data/hmdb51/train_test_lists/actions.txt

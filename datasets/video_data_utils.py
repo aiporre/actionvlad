@@ -6,9 +6,9 @@
 """Provides data for the UCF101 dataset.
 """
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import numpy as np
@@ -25,12 +25,12 @@ slim = tf.contrib.slim
 
 def getReaderFn(num_samples, modality='rgb', dataset_dir=''):
   def readerFn():
-    class reader_func(tf.compat.v1.ReaderBase):
+    class reader_func(tf.ReaderBase):
       @staticmethod
       def read(filename_queue):
         value = filename_queue.dequeue()
-        fpath, nframes, label = tf.io.decode_csv(
-            records=value, record_defaults=[[''], [-1], ['']],
+        fpath, nframes, label = tf.decode_csv(
+            value, record_defaults=[[''], [-1], ['']],
             field_delim=' ')
         # TODO(rgirdhar): Release the file_prefix='', file_zero_padding=4,
         # file_index=1 options to the bash script
@@ -55,7 +55,7 @@ def getReaderFn(num_samples, modality='rgb', dataset_dir=''):
           duration = nframes
           step = None
           if num_samples == 1:
-            step = tf.random.uniform([1], 0, nframes-optical_flow_frames-1, dtype='int32')[0]
+            step = tf.random_uniform([1], 0, nframes-optical_flow_frames-1, dtype='int32')[0]
           else:
             step = tf.cast((duration-tf.constant(optical_flow_frames)) /
                            (tf.constant(num_samples)), 'int32')
@@ -71,7 +71,7 @@ def getReaderFn(num_samples, modality='rgb', dataset_dir=''):
               file_prefix='flow', file_zero_padding=5, file_index=1,
               dataset_dir=dataset_dir[1],
               step=step)
-          image_buffer = list(zip(rgb_image_buffer, flow_image_buffer))
+          image_buffer = zip(rgb_image_buffer, flow_image_buffer)
           image_buffer = [[el[0]] + el[1] for el in image_buffer]
         else:
           logging.error('Unknown modality %s\n' % modality)
@@ -89,7 +89,7 @@ def decoderFn(num_samples=1, modality='rgb'):
 
     @staticmethod
     def decode(data, items):
-      with tf.compat.v1.name_scope('decode_video'):
+      with tf.name_scope('decode_video'):
         if modality == 'rgb':
           data.set_shape((num_samples,))
         elif modality.startswith('flow'):

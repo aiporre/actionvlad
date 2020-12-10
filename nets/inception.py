@@ -14,12 +14,12 @@
 # ==============================================================================
 """Brings all inception models under one namespace."""
 
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 # pylint: disable=unused-import
 from nets.inception_v2_tsn import inception_v2_tsn
-# from nets.inception_v2_tsn import inception_v2_tsn_arg_scope
-# from nets.inception_v2_tsn import inception_v2_tsn_base
+from nets.inception_v2_tsn import inception_v2_tsn_arg_scope
+from nets.inception_v2_tsn import inception_v2_tsn_base
 # pylint: enable=unused-import

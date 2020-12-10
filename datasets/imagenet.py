@@ -33,9 +33,9 @@ For each synset, there are on average 150 images with bounding boxes."
 WARNING: Don't use for object detection, in this case all the bounding boxes
 of the image belong to just one class.
 """
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 from six.moves import urllib
@@ -146,26 +146,26 @@ def get_split(split_name, dataset_dir, file_pattern=None, reader=None):
 
   # Allowing None in the signature so that dataset_factory can use the default.
   if reader is None:
-    reader = tf.compat.v1.TFRecordReader
+    reader = tf.TFRecordReader
 
   keys_to_features = {
-      'image/encoded': tf.io.FixedLenFeature(
+      'image/encoded': tf.FixedLenFeature(
           (), tf.string, default_value=''),
-      'image/format': tf.io.FixedLenFeature(
+      'image/format': tf.FixedLenFeature(
           (), tf.string, default_value='jpeg'),
-      'image/class/label': tf.io.FixedLenFeature(
+      'image/class/label': tf.FixedLenFeature(
           [], dtype=tf.int64, default_value=-1),
-      'image/class/text': tf.io.FixedLenFeature(
+      'image/class/text': tf.FixedLenFeature(
           [], dtype=tf.string, default_value=''),
-      'image/object/bbox/xmin': tf.io.VarLenFeature(
+      'image/object/bbox/xmin': tf.VarLenFeature(
           dtype=tf.float32),
-      'image/object/bbox/ymin': tf.io.VarLenFeature(
+      'image/object/bbox/ymin': tf.VarLenFeature(
           dtype=tf.float32),
-      'image/object/bbox/xmax': tf.io.VarLenFeature(
+      'image/object/bbox/xmax': tf.VarLenFeature(
           dtype=tf.float32),
-      'image/object/bbox/ymax': tf.io.VarLenFeature(
+      'image/object/bbox/ymax': tf.VarLenFeature(
           dtype=tf.float32),
-      'image/object/class/label': tf.io.VarLenFeature(
+      'image/object/class/label': tf.VarLenFeature(
           dtype=tf.int64),
   }
 

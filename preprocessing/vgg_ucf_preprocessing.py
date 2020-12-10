@@ -3,9 +3,9 @@
 # Copyright (c) 2017 Carnegie Mellon University and Adobe Systems Incorporated
 # Please see LICENSE on https://github.com/rohitgirdhar/ActionVLAD/ for details
 # ------------------------------------------------------------------------------
-
-
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import tensorflow as tf
 
@@ -13,6 +13,8 @@ from tensorflow.python.ops import control_flow_ops
 from preprocessing.utils import _mean_image_subtraction
 from preprocessing.vgg_preprocessing import _crop, _central_crop
 from tensorflow.python.platform import tf_logging as logging
+
+slim = tf.contrib.slim
 
 _R_MEAN = 123.0
 _G_MEAN = 117.0
@@ -60,7 +62,7 @@ def _random_crop(image_list, crop_height, crop_width):
 
   image_shape = control_flow_ops.with_dependencies(
       [rank_assertions[0]],
-      tf.shape(input=image_list[0]))
+      tf.shape(image_list[0]))
   image_height = image_shape[0]
   image_width = image_shape[1]
   crop_size_assert = tf.Assert(
@@ -75,7 +77,7 @@ def _random_crop(image_list, crop_height, crop_width):
     image = image_list[i]
     asserts.append(rank_assertions[i])
     shape = control_flow_ops.with_dependencies([rank_assertions[i]],
-                                               tf.shape(input=image))
+                                               tf.shape(image))
     height = shape[0]
     width = shape[1]
 
@@ -99,9 +101,9 @@ def _random_crop(image_list, crop_height, crop_width):
       asserts, tf.reshape(image_height - crop_height + 1, []))
   max_offset_width = control_flow_ops.with_dependencies(
       asserts, tf.reshape(image_width - crop_width + 1, []))
-  offset_height = tf.random.uniform(
+  offset_height = tf.random_uniform(
       [], maxval=max_offset_height, dtype=tf.int32)
-  offset_width = tf.random.uniform(
+  offset_width = tf.random_uniform(
       [], maxval=max_offset_width, dtype=tf.int32)
 
   return [_crop(image, offset_height, offset_width,
@@ -127,18 +129,18 @@ def preprocess_for_train(image,
     A preprocessed image.
   """
   num_channels = image.get_shape().as_list()[-1]
-  image = tf.image.resize(image, [_RESIZE_HT, _RESIZE_WD])
+  image = tf.image.resize_images(image, [_RESIZE_HT, _RESIZE_WD])
   # compute the crop size
   base_size = float(min(_RESIZE_HT, _RESIZE_WD))
-  scale_ratio_h = tf.random.shuffle(tf.constant(_SCALE_RATIOS))[0]
-  scale_ratio_w = tf.random.shuffle(tf.constant(_SCALE_RATIOS))[0]
+  scale_ratio_h = tf.random_shuffle(tf.constant(_SCALE_RATIOS))[0]
+  scale_ratio_w = tf.random_shuffle(tf.constant(_SCALE_RATIOS))[0]
   image = _random_crop([image],
       tf.cast(output_height * scale_ratio_h, tf.int32),
       tf.cast(output_width * scale_ratio_w, tf.int32))[0]
-  image = tf.image.resize(
+  image = tf.image.resize_images(
     image, [int(output_height * out_dim_scale),
             int(output_width * out_dim_scale)])
-  image = tf.cast(image, dtype=tf.float32)
+  image = tf.to_float(image)
   image = tf.image.random_flip_left_right(image)
   image.set_shape([int(output_height * out_dim_scale),
                    int(output_width * out_dim_scale), num_channels])
@@ -163,14 +165,14 @@ def preprocess_for_eval(image, output_height, output_width,
   Returns:
     A preprocessed image.
   """
-  image = tf.image.resize(image, [_RESIZE_HT, _RESIZE_WD])
+  image = tf.image.resize_images(image, [_RESIZE_HT, _RESIZE_WD])
   if ncrops == 1:
     images = tf.image.crop_to_bounding_box(image, 16, 60, output_height, output_width)
     if abs(out_dim_scale - 1) >= 0.1:
-      images = tf.image.resize(
+      images = tf.image.resize_images(
         images, [int(output_height * out_dim_scale),
                 int(output_width * out_dim_scale)])
-    images = _mean_image_subtraction(tf.cast(images, dtype=tf.float32), mean_vals)
+    images = _mean_image_subtraction(tf.to_float(images), mean_vals)
     images = tf.expand_dims(images, 0)
   elif ncrops == 5:
     collect = []
@@ -187,7 +189,7 @@ def preprocess_for_eval(image, output_height, output_width,
     # for i in range(5):
     #   collect.append(tf.image.flip_left_right(collect[i]))
     for i in range(len(collect)):
-      collect[i] = _mean_image_subtraction(tf.cast(collect[i], dtype=tf.float32), mean_vals)
+      collect[i] = _mean_image_subtraction(tf.to_float(collect[i]), mean_vals)
     images = tf.pack(collect)
   # image.set_shape([output_height, output_width, 3])
   # images = tf.to_float(images)

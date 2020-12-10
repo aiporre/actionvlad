@@ -9,7 +9,7 @@ import h5py
 from tensorflow.contrib import slim
 from tensorflow.python.platform import tf_logging as logging
 import tensorflow as tf
-from . import var_name_mapper
+import var_name_mapper
 
 
 def restore_model(checkpoint_paths,
@@ -44,8 +44,8 @@ def restore_model(checkpoint_paths,
           init_weights = np.load(checkpoint_path).item()
           init_weights_final = {}
           vars_restored = []
-          for key in list(init_weights.keys()):
-            for subkey in list(init_weights[key].keys()):
+          for key in init_weights.keys():
+            for subkey in init_weights[key].keys():
               prefix = this_stream_name
               if this_checkpoint_style == 'v2_withStream':
                 prefix = 'stream0/'  # because any model trained with stream
